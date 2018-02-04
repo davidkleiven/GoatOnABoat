@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 import requests
 import os
 import random
-import shutil
 import wget
 
 class CityImageQuestion(QuestionWithImage):
