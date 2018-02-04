@@ -1,9 +1,9 @@
-from setuptools import setup
+from setuptools import find_packages
 
 setup(
     name="gob",
     author="David Kleiven",
     version=1.0,
-    packages=["gob"],
+    packages=find_packages(),
     package_data={"gob":["data/*"]}
 )

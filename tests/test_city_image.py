@@ -11,5 +11,9 @@ class TestCityImage(unittest.TestCase):
             no_throw = False
         self.assertTrue( no_throw )
 
+    def test_get_image(self):
+        cityQ = CityImageQuestion()
+        cityQ.get_image("London")
+
 if __name__ == "__main__":
     unittest.main()

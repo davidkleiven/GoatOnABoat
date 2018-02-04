@@ -7,6 +7,3 @@ class Question(object):
 
     def get( self ):
         raise NotImplementedError( "This function has to be implemented in derived classes!" )
-
-    def alternatives(self):
-        raise NotImplementedError( "This function has to be implemented in derived classes!" )
