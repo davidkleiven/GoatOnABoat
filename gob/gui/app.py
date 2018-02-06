@@ -19,12 +19,19 @@ class App(object):
         self.mode = GameMode.IDLE
         self.active_question = self.question_types[0]
         self.user_has_selected_alternative = False
+        self.map = pygame.image.load( "data/holmen.png" )
+        self.map = pygame.transform.scale( self.map, (int(self.width/2.0),self.height) )
 
     def on_init(self):
         pygame.init()
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF)
         self._running = True
         pygame.font.init()
+        self.draw_world()
+
+    def draw_world(self):
+        self._display_surf.blit( self.map, self.map.get_rect() )
+        pygame.display.flip()
 
     def ask_question( self ):
         """
@@ -52,6 +59,7 @@ class App(object):
         elif ( event.type == pygame.KEYDOWN ):
             if ( event.key == pygame.K_n ):
                 self._display_surf.fill((0,0,0))
+                self.draw_world()
                 max_tries = 100
                 managed_to_create_question = False
                 for i in range(max_tries):
@@ -62,6 +70,7 @@ class App(object):
                     except Exception as exc:
                         print (str(exc))
                         self._display_surf.fill((0,0,0))
+                        self.draw_world()
                         pass
                 if ( not manage_to_create_question ):
                     raise RuntimeError( "Did not manage to create a new question in %d tries!"%(max_tries) )
