@@ -17,6 +17,8 @@ class Question(object):
         self.alternatives = []
         self.correct = ""
         self.current_selected = 0
+        self.on_correct_cb = None
+        self.on_wrong_cb = None
 
     def check_answer( self ):
         pass
@@ -77,6 +79,11 @@ class QuestionWithImage(Question):
             colors[self.current_selected] = self.wrong_answer
 
         self.draw_alternatives( screen, self.alt_origin, self.size, self.alternatives, colors=colors )
+
+        if ( not self.on_correct_cb is None and (self.current_selected==correct_index) ):
+            self.on_correct_cb()
+        elif ( not self.on_wrong_cb is None and (self.current_selected!=correct_index) ):
+            self.on_wrong_cb()
         pygame.display.flip()
 
 
