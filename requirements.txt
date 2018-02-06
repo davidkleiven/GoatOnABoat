@@ -2,3 +2,4 @@ pygame
 BeautifulSoup4
 wget
 requests
+enum34
