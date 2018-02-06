@@ -12,6 +12,7 @@ class OnCorrectDrawOptions(object):
         """
         tile_x = self.app.players[self.app.active_player].tile_x
         tile_y = self.app.players[self.app.active_player].tile_y
+        self.app.players[self.app.active_player].points += 1
         n_tiles = self.app.n_tiles
         font = pg.font.SysFont( "Comic Sans MS", 30 )
         color = (0,0,0)
