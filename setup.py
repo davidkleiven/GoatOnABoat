@@ -5,5 +5,6 @@ setup(
     author="David Kleiven",
     version=1.0,
     packages=find_packages(),
-    package_data={"gob":["data/*"]}
+    package_data={"gob":["data/*"]},
+    scripts=["bin/goat_boat.py"]
 )

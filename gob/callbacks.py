@@ -64,7 +64,7 @@ class OnGoatDelivery(object):
         player.points += self.app.points_per_goat
         message = "{} delivered a goat!".format( player.name )
         font = pg.font.SysFont( "Comic Sans MS", 48 )
-        text = font.render( text, False, (228,26,28) )
+        text = font.render( message, False, (228,26,28) )
         pos = (3,self.app.height/2.0)
         player.has_goat = False
         self.app._display_surf.blit( text, pos )
@@ -78,8 +78,8 @@ class OnGoatPickUp(object):
         if ( player.has_goat ):
             return
         player.has_goat = True
-        message = "{} picked up a new goat!".format( player.name )
+        message = "{} picked up a new goat! Points: {}".format( player.name, player.points )
         font = pg.font.SysFont( "Comic Sans MS", 48 )
-        text = font.render( text, False, (228,26,28) )
+        text = font.render( message, False, (228,26,28) )
         pos = (3,self.app.height/2.0)
         self.app._display_surf.blit( text, pos )

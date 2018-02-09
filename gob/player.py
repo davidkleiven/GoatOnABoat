@@ -11,7 +11,7 @@ class Player(object):
         self.tile_y = 0
         self.app = app
         self.n_tiles = self.app.n_tiles
-        self.has_goat = False
+        self.has_goat = True
 
     def allowed_move( self, new_tile ):
         uid = self.app.tile_id( new_tile )

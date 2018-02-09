@@ -4,9 +4,10 @@ import random
 from gob.player import Player
 import gob.callbacks as cb
 from gob.settings import GameMode
+import time
 
 class App(object):
-    def __init__( self ):
+    def __init__( self, players=None ):
         self._running = True
         self._display_surf = None
         self.width = 640
@@ -19,12 +20,23 @@ class App(object):
         self.map = pygame.image.load( "data/holmen.png" )
         self.map = pygame.transform.scale( self.map, (int(self.width/2.0),self.height) )
         self.n_tiles = 10
+
+        # Define some colors
         self.grid_color = (99,99,99)
+        self.pick_up_tile_color = (141,211,199)
+        self.delivery_tile_color = (251,180,174)
+        self.active_player_color = self.pick_up_tile_color
+
         player_img = pygame.image.load( "data/empty_boat.png" )
         img_width = int(self.width/(2.0*self.n_tiles))
         img_height = int(self.height/self.n_tiles)
         player_img = pygame.transform.scale( player_img, (img_width,img_height) )
-        self.players = [Player(self,name="Test player",img=player_img)]
+        self.players = []
+        if ( players is None ):
+            self.players = [Player(self,name="Test player",img=player_img)]
+        else:
+            for player in players:
+                self.players.append( Player(self,name=player, img=player_img) )
         self.active_player = 0
         self.disabled_tiles = [42,52,33,43,53,63,34,44,54,64,45,55,65,38,39] # Hard coded tiles boat cannot occupy
         self.delivery_tiles = [32,41,51,62,73,74,75,66,56,46,35,24,23] # Player reach these tiles with a goat
@@ -44,6 +56,7 @@ class App(object):
         self._display_surf = pygame.display.set_mode(self.size, pygame.HWSURFACE | pygame.DOUBLEBUF )
         self._running = True
         pygame.font.init()
+        pygame.display.set_caption( "Goat On A Boat" )
         self.draw_world()
 
     def tile_size(self):
@@ -52,9 +65,13 @@ class App(object):
         return wx,wy
 
     def draw_world(self):
+        self._display_surf.fill((0,0,0))
         self._display_surf.blit( self.map, self.map.get_rect() )
+        self.color_pickup_tiles()
+        self.color_deliver_tiles()
         self.draw_grid()
         self.draw_players()
+        self.draw_score()
         if ( self.show_tile_ids ):
             self.draw_tile_ids()
         pygame.display.flip()
@@ -70,6 +87,7 @@ class App(object):
         while ( y < self.height ):
             pygame.draw.line( self._display_surf, self.grid_color, (0,y),(int(self.width/2.0),y))
             y += delta
+
     def tile_to_pixel( self, tile_pos ):
         pix_per_tile_x = self.width/(2.0*self.n_tiles)
         pix_per_tile_y = self.height/self.n_tiles
@@ -80,6 +98,11 @@ class App(object):
     def tile_id( self, tile_pos ):
         uid = tile_pos[0]*self.n_tiles + tile_pos[1]
         return uid
+
+    def tile_from_uid( self, uid ):
+        ty = uid%self.n_tiles
+        tx = int(uid/self.n_tiles)
+        return tx,ty
 
     def draw_tile_ids( self ):
         """
@@ -104,6 +127,22 @@ class App(object):
             rect[1] += y
             self._display_surf.blit( player.img, rect )
         pygame.display.flip()
+
+    def color_pickup_tiles(self):
+        width,height = self.tile_size()
+        for uid in self.pickup_tiles:
+            tile = self.tile_from_uid(uid)
+            x,y = self.tile_to_pixel(tile)
+            rect = (x,y,width,height)
+            pygame.draw.rect( self._display_surf, self.pick_up_tile_color, rect )
+
+    def color_deliver_tiles(self):
+        width,height = self.tile_size()
+        for uid in self.delivery_tiles:
+            tile = self.tile_from_uid(uid)
+            x,y = self.tile_to_pixel(tile)
+            rect = (x,y,width,height)
+            pygame.draw.rect( self._display_surf, self.delivery_tile_color, rect )
 
     def ask_question( self ):
         """
@@ -177,6 +216,21 @@ class App(object):
             self.active_player = 0
         self.mode = GameMode.IDLE
 
+    def draw_score(self):
+        font = pygame.font.SysFont( "Comic Sans MS", 22 )
+        score =""
+        for i,player in enumerate(self.players):
+            score += "%s:%d "%(player.name[0],player.points)
+        text = font.render( score, False, (255,255,255) )
+        x = int(self.width/2.0+4)
+        y = 5
+        self._display_surf.blit( text, (x,y) )
+        y = 20
+        active = "Player: {}".format(self.players[self.active_player].name)
+        text = font.render( active, False, (255,255,255))
+        self._display_surf.blit( text, (x,y) )
+        pygame.display.flip()
+
     def on_loop(self):
         pass
     def on_render(self):
@@ -189,6 +243,7 @@ class App(object):
             self._running = False
 
         while( self._running ):
+            time.sleep(0.5)
             for event in pygame.event.get():
                 self.on_event(event)
             self.on_loop()
