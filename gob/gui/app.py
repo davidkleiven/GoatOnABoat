@@ -27,7 +27,9 @@ class App(object):
         self.players = [Player(self,name="Test player",img=player_img)]
         self.active_player = 0
         self.disabled_tiles = [42,52,33,43,53,63,34,44,54,64,45,55,65,38,39] # Hard coded tiles boat cannot occupy
+        self.delivery_tiles = [32,41,51,62,73,74,75,66,56,46,35,24,23] # Player reach these tiles with a goat
         self.show_tile_ids = False
+        self.points_per_goat = 10
 
         # Attach the callback on correct to each question
         for q in self.question_types:

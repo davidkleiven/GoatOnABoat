@@ -54,3 +54,16 @@ class OnWrongAnswer(object):
 
     def __call__(self):
         self.app.next_player()
+
+class OnGoatDelivery(object):
+    def __init__( self, app ):
+        self.app = app
+
+    def __call__( self ):
+        player = self.app.players[self.app.active_player]
+        player.points += self.app.points_per_goat
+        message = "{} delivered a goat!".format( player.name )
+        font = pg.font.SysFont( "Comic Sans MS", 48 )
+        text = font.render( text, False, (228,26,28) )
+        pos = (3,self.app.height/2.0)
+        self.app._display_surf.blit( text, pos )
