@@ -66,4 +66,20 @@ class OnGoatDelivery(object):
         font = pg.font.SysFont( "Comic Sans MS", 48 )
         text = font.render( text, False, (228,26,28) )
         pos = (3,self.app.height/2.0)
+        player.has_goat = False
+        self.app._display_surf.blit( text, pos )
+
+class OnGoatPickUp(object):
+    def __init__( self, app ):
+        self.app = app
+
+    def __call__( self ):
+        player = self.app.players[self.app.active_player]
+        if ( player.has_goat ):
+            return
+        player.has_goat = True
+        message = "{} picked up a new goat!".format( player.name )
+        font = pg.font.SysFont( "Comic Sans MS", 48 )
+        text = font.render( text, False, (228,26,28) )
+        pos = (3,self.app.height/2.0)
         self.app._display_surf.blit( text, pos )

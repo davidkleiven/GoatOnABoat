@@ -28,6 +28,7 @@ class App(object):
         self.active_player = 0
         self.disabled_tiles = [42,52,33,43,53,63,34,44,54,64,45,55,65,38,39] # Hard coded tiles boat cannot occupy
         self.delivery_tiles = [32,41,51,62,73,74,75,66,56,46,35,24,23] # Player reach these tiles with a goat
+        self.pickup_tiles = [29,28,48,49]
         self.show_tile_ids = False
         self.points_per_goat = 10
 
@@ -35,6 +36,8 @@ class App(object):
         for q in self.question_types:
             q.on_correct_cb = cb.OnCorrectDrawOptions(self)
             q.on_wrong_cb = cb.OnWrongAnswer(self)
+
+        self.goat_delivered = cb.OnGoatDelivery(self)
 
     def on_init(self):
         pygame.init()
@@ -157,7 +160,15 @@ class App(object):
                     player.move( "left" )
                 else:
                     return # Return if the pressed key is not a,w,s,d
+
                 self.draw_world()
+                # Check if the player reached a goat delivery point
+                if ( player.has_goat ):
+                    tile_x = player.tile_x
+                    tile_y = player.tile_y
+                    uid = self.tile_id ((tile_x,tile_y) )
+                    if ( uid in self.delivery_tiles ):
+                        self.goat_delivered()
                 self.next_player()
 
     def next_player(self):
