@@ -1,5 +1,6 @@
 import pygame as pg
 from gob.settings import GameMode
+import time
 
 class OnCorrectDrawOptions(object):
     def __init__( self, app ):
@@ -68,6 +69,8 @@ class OnGoatDelivery(object):
         pos = (3,self.app.height/2.0)
         player.has_goat = False
         self.app._display_surf.blit( text, pos )
+        pg.display.flip()
+        time.sleep(2)
 
 class OnGoatPickUp(object):
     def __init__( self, app ):
@@ -83,3 +86,5 @@ class OnGoatPickUp(object):
         text = font.render( message, False, (228,26,28) )
         pos = (3,self.app.height/2.0)
         self.app._display_surf.blit( text, pos )
+        pg.display.flip()
+        time.sleep(2)
