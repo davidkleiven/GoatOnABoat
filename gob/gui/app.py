@@ -24,8 +24,10 @@ class App(object):
         img_width = int(self.width/(2.0*self.n_tiles))
         img_height = int(self.height/self.n_tiles)
         player_img = pygame.transform.scale( player_img, (img_width,img_height) )
-        self.players = [Player(name="Test player",img=player_img,n_tiles=self.n_tiles)]
+        self.players = [Player(self,name="Test player",img=player_img)]
         self.active_player = 0
+        self.disabled_tiles = [42,52,33,43,53,63,34,44,54,64,45,55,65,38,39] # Hard coded tiles boat cannot occupy
+        self.show_tile_ids = False
 
         # Attach the callback on correct to each question
         for q in self.question_types:
@@ -48,6 +50,8 @@ class App(object):
         self._display_surf.blit( self.map, self.map.get_rect() )
         self.draw_grid()
         self.draw_players()
+        if ( self.show_tile_ids ):
+            self.draw_tile_ids()
         pygame.display.flip()
 
     def draw_grid(self):
@@ -67,6 +71,25 @@ class App(object):
         x = tile_pos[0]*pix_per_tile_x
         y = tile_pos[1]*pix_per_tile_y
         return x,y
+
+    def tile_id( self, tile_pos ):
+        uid = tile_pos[0]*self.n_tiles + tile_pos[1]
+        return uid
+
+    def draw_tile_ids( self ):
+        """
+        Writes the UID of each tile on the screen.
+        Used for debugging only
+        """
+        BLACK = (0,0,0)
+        font = pygame.font.SysFont( "Comic Sans MS", 30 )
+        for i in range(self.n_tiles):
+            for j in range(self.n_tiles):
+                x,y = self.tile_to_pixel( (i,j) )
+                uid = self.tile_id( (i,j) )
+                text = font.render( "{}".format(uid), False, BLACK )
+                self._display_surf.blit(text,(x,y) )
+        pygame.display.flip()
 
     def draw_players(self):
         for player in self.players:
@@ -161,4 +184,5 @@ class App(object):
 
 if __name__ == "__main__":
     theApp = App()
+    #theApp.show_tile_ids = True
     theApp.on_execute()
