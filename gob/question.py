@@ -26,16 +26,16 @@ class Question(object):
     def get( self ):
         raise NotImplementedError( "This function has to be implemented in derived classes!" )
 
-    def draw( self ):
-        raise NotImplementedError( "This function has to implemented in derived class!" )
+    def draw( self, screen, origin, size, text, alternatives, altcolor=None ):
+        self.font = pygame.font.SysFont( "Comic Sans MS", 30 )
+        self.store_alternatives( alternatives )
+        self.size = size
+        self.origin = origin
+        self.draw_question( screen, origin, size, text )
 
-class QuestionWithImage(Question):
-    def __init__(self):
-        Question.__init__(self)
-        self.image_name = ""
-        self.origin = None
-        self.size = None
-        self.alt_origin = None
+        self.alt_origin = [origin[0],int(0.5*size[1])]
+        self.draw_alternatives( screen, self.alt_origin, size, alternatives, colors=altcolor )
+        pygame.display.flip()
 
     def draw_alternatives( self, screen, origin, size, alternatives, colors=None ):
         """
@@ -86,27 +86,40 @@ class QuestionWithImage(Question):
             self.on_wrong_cb()
         pygame.display.flip()
 
-
-    def draw( self, screen, origin, size, text, alternatives, altcolor=None ):
-        """
-        Puts the question onto the screen
-        """
-        self.alternatives = alternatives
-        self.correct = copy.deepcopy(alternatives[0])
-        random.shuffle(self.alternatives) # Shuffle alternatives randomly
-        self.size = size
-        self.origin = origin
-
-        if ( self.image_name == "" ):
-            raise ValueError( "No image given!" )
-        img = pygame.image.load(self.image_name)
-        self.font = pygame.font.SysFont( "Comic Sans MS", 30 )
-
+    def draw_question( self, screen, origin, size, text ):
         # Draw rectangle behind the question text
         y_text = int(0.1*size[1])
         pygame.draw.rect( screen, self.qbox_color, [origin[0],y_text,size[0],20] )
         q_text = self.font.render(text, False, self.text_color )
         screen.blit( q_text, (int(origin[0]+4), y_text))
+
+    def store_alternatives( self, alternatives ):
+        self.alternatives = alternatives
+        self.correct = copy.deepcopy(alternatives[0])
+        random.shuffle(self.alternatives) # Shuffle alternatives randomly
+
+class QuestionWithImage(Question):
+    def __init__(self):
+        Question.__init__(self)
+        self.image_name = ""
+        self.origin = None
+        self.size = None
+        self.alt_origin = None
+
+    def draw( self, screen, origin, size, text, alternatives, altcolor=None ):
+        """
+        Puts the question onto the screen
+        """
+        self.font = pygame.font.SysFont( "Comic Sans MS", 30 )
+        self.store_alternatives( alternatives )
+        self.size = size
+        self.origin = origin
+
+        self.draw_question( screen, origin, size, text )
+
+        if ( self.image_name == "" ):
+            raise ValueError( "No image given!" )
+        img = pygame.image.load(self.image_name)
 
         self.alt_origin = [origin[0],int(0.5*size[1])]
         self.draw_alternatives( screen, self.alt_origin, size, alternatives, colors=altcolor )

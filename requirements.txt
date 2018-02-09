@@ -3,3 +3,4 @@ BeautifulSoup4
 wget
 requests
 enum34
+numpy
