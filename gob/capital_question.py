@@ -15,7 +15,6 @@ def load_city_file():
                 "longitude":splitted[3].rstrip()
             }
             info.append(new_entry)
-            print (new_entry)
     return info
 
 class CapitalCountry( Question ):

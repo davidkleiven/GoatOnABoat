@@ -6,6 +6,8 @@ import gob.callbacks as cb
 from gob.settings import GameMode
 import time
 from gob.capital_question import CapitalCountry, CapitalCoordinates
+from gob.bird_question import BirdQuestion
+import numpy as np
 
 class App(object):
     def __init__( self, players=None ):
@@ -14,7 +16,7 @@ class App(object):
         self.width = 640
         self.height = 400
         self.size = self.width,self.height
-        self.question_types = [CityImageQuestion(),CapitalCountry(),CapitalCoordinates()]
+        self.question_types = [CityImageQuestion(),CapitalCountry(),CapitalCoordinates(),BirdQuestion()]
         self.mode = GameMode.IDLE
         self.active_question = self.question_types[0]
         self.user_has_selected_alternative = False
@@ -150,7 +152,8 @@ class App(object):
         """
         Generates a new question
         """
-        self.active_question = self.question_types[random.randint(0,len(self.question_types))]
+        qtype = np.random.randint(low=0,high=len(self.question_types))
+        self.active_question = self.question_types[qtype]
         print (self.active_question)
         text, alternatives = self.active_question.get()
         self.active_question.draw( self._display_surf, (self.width*0.5,0.0), (self.width*0.5,self.height), text, alternatives )

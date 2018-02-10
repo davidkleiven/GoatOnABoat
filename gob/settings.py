@@ -7,3 +7,4 @@ class GameMode(Enum):
 
 city_file = "data/cities.txt"
 city_coordinate_file = "data/city_coordinates.csv"
+bird_file = "data/birds.txt"
