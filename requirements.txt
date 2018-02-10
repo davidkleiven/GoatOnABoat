@@ -4,3 +4,4 @@ wget
 requests
 enum34
 numpy
+selenium

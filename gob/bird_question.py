@@ -16,7 +16,6 @@ class BirdQuestion( QuestionWithImage ):
         self.current_attempts = 0
 
     def get_url( self, bird_name ):
-        #url = "https://www.google.no/search?q="+bird_name+"&dcr=0&source=lnms&tbm=isch&sa=X&ved=0ahUKEwid5tHXk5vZAhUG1SwKHTihBLkQ_AUICigB&biw=1920&bih=939"
         url = "https://snl.no/"+bird_name
         return url
 

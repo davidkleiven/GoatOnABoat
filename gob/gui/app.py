@@ -154,6 +154,7 @@ class App(object):
         Generates a new question
         """
         qtype = np.random.randint(low=0,high=len(self.question_types))
+        qtype = 3
         self.active_question = self.question_types[qtype]
         text, alternatives = self.active_question.get()
         self.active_question.draw( self._display_surf, (self.width*0.5,0.0), (self.width*0.5,self.height), text, alternatives )
