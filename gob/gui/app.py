@@ -54,7 +54,7 @@ class App(object):
             q.on_wrong_cb = cb.OnWrongAnswer(self)
 
         self.goat_delivered = cb.OnGoatDelivery(self)
-        self.goad_picked_up = cb.OnGoatPickUp(self)
+        self.goat_picked_up = cb.OnGoatPickUp(self)
 
     def on_init(self):
         pygame.init()
@@ -216,7 +216,7 @@ class App(object):
                         self.goat_delivered()
                 else:
                     if ( uid in self.pickup_tiles ):
-                        self.goad_picked_up()
+                        self.goat_picked_up()
                 self.next_player()
 
     def next_player(self):
