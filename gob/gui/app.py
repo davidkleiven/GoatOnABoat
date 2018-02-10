@@ -211,7 +211,8 @@ class App(object):
                     uid = self.tile_id ((tile_x,tile_y) )
                     if ( uid in self.delivery_tiles ):
                         self.goat_delivered()
-                    elif ( uid in self.pickup_tiles ):
+                else:
+                    if ( uid in self.pickup_tiles ):
                         self.goad_picked_up()
                 self.next_player()
 
