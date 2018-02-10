@@ -208,10 +208,10 @@ class App(object):
 
                 self.draw_world()
                 # Check if the player reached a goat delivery point
+                tile_x = player.tile_x
+                tile_y = player.tile_y
+                uid = self.tile_id ((tile_x,tile_y) )
                 if ( player.has_goat ):
-                    tile_x = player.tile_x
-                    tile_y = player.tile_y
-                    uid = self.tile_id ((tile_x,tile_y) )
                     if ( uid in self.delivery_tiles ):
                         self.goat_delivered()
                 else:
