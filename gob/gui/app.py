@@ -9,6 +9,7 @@ from gob.capital_question import CapitalCountry, CapitalCoordinates
 from gob.bird_question import BirdQuestion
 from gob.famous_norwegians import FamousNorwegians
 import numpy as np
+import json
 
 class App(object):
     def __init__( self, players=None ):
@@ -21,9 +22,14 @@ class App(object):
         self.mode = GameMode.IDLE
         self.active_question = self.question_types[0]
         self.user_has_selected_alternative = False
-        self.map = pygame.image.load( "data/holmen.png" )
-        self.map = pygame.transform.scale( self.map, (int(self.width/2.0),self.height) )
-        self.n_tiles = 10
+
+        # Define variables that gets read from the map file
+        self.map = None
+        self.n_tiles = 1
+        self.delivery_tiles = []
+        self.pickup_tiles = []
+        self.disabled_tiles = []
+        self.load_map( "data/holmen_center.map.json" )
 
         # Define some colors
         self.grid_color = (99,99,99)
@@ -42,9 +48,6 @@ class App(object):
             for player in players:
                 self.players.append( Player(self,name=player, img=player_img) )
         self.active_player = 0
-        self.disabled_tiles = [42,52,33,43,53,63,34,44,54,64,45,55,65,38,39] # Hard coded tiles boat cannot occupy
-        self.delivery_tiles = [32,41,51,62,73,74,75,66,56,46,35,24,23] # Player reach these tiles with a goat
-        self.pickup_tiles = [29,28,48,49]
         self.show_tile_ids = False
         self.points_per_goat = 10
 
@@ -55,6 +58,23 @@ class App(object):
 
         self.goat_delivered = cb.OnGoatDelivery(self)
         self.goat_picked_up = cb.OnGoatPickUp(self)
+
+    def load_map( self, mapfile ):
+        """
+        Loads the map files
+        """
+        if ( not mapfile.endswith(".map.json") ):
+            raise ValueError( "You have to provide a map file! (extension .map.json)" )
+
+        with open( mapfile, 'r' ) as infile:
+            data = json.load(infile)
+
+        self.n_tiles = data["n_tiles"]
+        self.disabled_tiles = data["disabled_tiles"]
+        self.pickup_tiles = data["pickup_tiles"]
+        self.delivery_tiles = data["delivery_tiles"]
+        self.map = pygame.image.load( data["img"] )
+        self.map = pygame.transform.scale( self.map, (int(self.width/2.0),self.height) )
 
     def on_init(self):
         pygame.init()
@@ -154,7 +174,6 @@ class App(object):
         Generates a new question
         """
         qtype = np.random.randint(low=0,high=len(self.question_types))
-        qtype = 3
         self.active_question = self.question_types[qtype]
         text, alternatives = self.active_question.get()
         self.active_question.draw( self._display_surf, (self.width*0.5,0.0), (self.width*0.5,self.height), text, alternatives )
