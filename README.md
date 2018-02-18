@@ -3,6 +3,12 @@
 Goat on a boat quizgame
 
 # Installation
+The game depends on the following packages
+* [Google Chrome (not Chromium)](https://www.google.com/chrome/)
+* [Chromedriver](https://sites.google.com/a/chromium.org/chromedriver/)
+
+So install these first.
+
 To install the game
 ```bash
 pip install -r requirements.txt
