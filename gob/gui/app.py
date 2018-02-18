@@ -29,7 +29,7 @@ class App(object):
         self.delivery_tiles = []
         self.pickup_tiles = []
         self.disabled_tiles = []
-        self.load_map( "data/holmen_center.map.json" )
+        self.load_map( "data/holmen_one_end.map.json" )
 
         # Define some colors
         self.grid_color = (99,99,99)
@@ -48,7 +48,7 @@ class App(object):
             for player in players:
                 self.players.append( Player(self,name=player, img=player_img) )
         self.active_player = 0
-        self.show_tile_ids = False
+        self.show_tile_ids = True
         self.points_per_goat = 10
 
         # Attach the callback on correct to each question

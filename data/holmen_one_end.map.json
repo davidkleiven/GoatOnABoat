@@ -1,0 +1,7 @@
+{
+  "img":"data/holmen_one_end.png",
+  "disabled_tiles":[30,40,50,60],
+  "delivery_tiles":[20,31,41,51,61,70,80],
+  "pickup_tiles":[9,19,29,39,49,59,69,79,89,99],
+  "n_tiles":10
+}
