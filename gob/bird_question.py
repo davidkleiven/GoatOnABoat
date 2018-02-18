@@ -28,14 +28,6 @@ class BirdQuestion( QuestionWithImage ):
             soup = BeautifulSoup( res.text )
             question = "Hvilken fugl?"
 
-            """
-            # Get all images
-            imgs = soup.findAll( "figure", {"class":"image landscape non-expandable published"} )
-            imgs += soup.findAll( "figure", {"class":"image portrait non-expandable published"})
-            link = imgs[0].img["src"]
-            #link = json.loads( imgs[0].text )["ou"]
-            fname = link.split("/")[-1]
-            """
             link = self.google_img.get_first_image( self.birds[0] )
             fname = link.split("/")[-1]
 
