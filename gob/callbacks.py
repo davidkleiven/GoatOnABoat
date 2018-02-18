@@ -1,20 +1,32 @@
 import pygame as pg
 from gob.settings import GameMode
+from gob.gui.dirty_tricks_menu import DirtyTricksMenu
 import time
 
 class OnCorrectDrawOptions(object):
     def __init__( self, app ):
         self.app = app
+        self.dirty_tricks_menu = DirtyTricksMenu(app)
 
     def can_move( self, new_tile ):
         uid = self.app.tile_id( new_tile )
-        return not uid in self.app.disabled_tiles
+        return not uid in (self.app.disabled_tiles+self.app.tiles_occupied_by_players())
+
+    def get_dirty_trick( self, key ):
+        """
+        Returns the dirty trick corresponding to the selection
+        """
+        for trick in self.dirty_tricks_menu.available_tricks:
+            if ( trick.key == key ):
+                return trick
+        raise ValueError( "No dirty trick corresponds to the selection!" )
 
     def __call__(self):
         """
         Draw letters and change the game mode to wait
         for user response to move boat
         """
+        self.app.draw_world()
         tile_x = self.app.players[self.app.active_player].tile_x
         tile_y = self.app.players[self.app.active_player].tile_y
         self.app.players[self.app.active_player].points += 1
@@ -47,6 +59,7 @@ class OnCorrectDrawOptions(object):
             text = font.render( "D", False, color )
             self.app._display_surf.blit(text,(pos_x,pos_y))
         self.app.mode = GameMode.WAIT_FOR_USER_MOVE_BOAT
+        self.dirty_tricks_menu.show()
         pg.display.flip()
 
 class OnWrongAnswer(object):

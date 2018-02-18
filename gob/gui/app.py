@@ -10,6 +10,7 @@ from gob.bird_question import BirdQuestion
 from gob.famous_norwegians import FamousNorwegians
 import numpy as np
 import json
+from gob import settings
 
 class App(object):
     def __init__( self, players=None ):
@@ -45,10 +46,19 @@ class App(object):
         if ( players is None ):
             self.players = [Player(self,name="Test player",img=player_img)]
         else:
-            for player in players:
+            start_tile = 0
+            pl_imgs = ["data/empty_boat.png","data/player2.png","data/player3.png","data/player4.png","data/player5.png"]
+            for i,player in enumerate(players):
+                player_img = pygame.image.load( pl_imgs[i%len(pl_imgs)] )
+                img_width = int(self.width/(2.0*self.n_tiles))
+                img_height = int(self.height/self.n_tiles)
+                player_img = pygame.transform.scale( player_img, (img_width,img_height) )
                 self.players.append( Player(self,name=player, img=player_img) )
+                self.players[-1].tile_y = self.n_tiles-1
+                self.players[-1].tile_x = start_tile
+                start_tile += 1
         self.active_player = 0
-        self.show_tile_ids = True
+        self.show_tile_ids = False
         self.points_per_goat = 10
 
         # Attach the callback on correct to each question
@@ -58,6 +68,7 @@ class App(object):
 
         self.goat_delivered = cb.OnGoatDelivery(self)
         self.goat_picked_up = cb.OnGoatPickUp(self)
+        self.active_dirty_trick = None
 
     def load_map( self, mapfile ):
         """
@@ -89,11 +100,20 @@ class App(object):
         wy = self.height/self.n_tiles
         return wx,wy
 
+    def tiles_occupied_by_players( self ):
+        """
+        Returns a list with the uids of the tils occupied by other players
+        """
+        uids = []
+        for player in self.players:
+            uids.append( self.tile_id((player.tile_x,player.tile_y)) )
+        return uids
+
     def draw_world(self):
         self._display_surf.fill((0,0,0))
         self._display_surf.blit( self.map, self.map.get_rect() )
-        self.color_pickup_tiles()
-        self.color_deliver_tiles()
+        #self.color_pickup_tiles()
+        #self.color_deliver_tiles()
         self.draw_grid()
         self.draw_players()
         self.draw_score()
@@ -120,6 +140,13 @@ class App(object):
         y = tile_pos[1]*pix_per_tile_y
         return x,y
 
+    def pixel_to_tile( self, pixels ):
+        pix_per_tile_x = self.width/(2.0*self.n_tiles)
+        pix_per_tile_y = self.height/self.n_tiles
+        tile_x = int( pixels[0]/pix_per_tile_x )
+        tile_y = int( pixels[1](pix_per_tile_y) )
+        return tile_x,tile_y
+
     def tile_id( self, tile_pos ):
         uid = tile_pos[0]*self.n_tiles + tile_pos[1]
         return uid
@@ -145,6 +172,11 @@ class App(object):
         pygame.display.flip()
 
     def draw_players(self):
+        # Highlight the tile of the active player
+        act_player = self.players[self.active_player]
+        tile_x = act_player.tile_x
+        tile_y = act_player.tile_y
+        self.color_tile( (tile_x,tile_y), self.active_player_color )
         for player in self.players:
             x,y = self.tile_to_pixel( (player.tile_x,player.tile_y) )
             rect = player.img.get_rect()
@@ -152,6 +184,15 @@ class App(object):
             rect[1] += y
             self._display_surf.blit( player.img, rect )
         pygame.display.flip()
+
+    def color_tile( self, tile, color ):
+        """
+        Color one tile
+        """
+        width,height = self.tile_size()
+        x,y = self.tile_to_pixel(tile)
+        rect = (x,y,width,height)
+        pygame.draw.rect( self._display_surf, color, rect )
 
     def color_pickup_tiles(self):
         width,height = self.tile_size()
@@ -213,6 +254,8 @@ class App(object):
                     self.active_question.check_answer(self._display_surf)
 
         if ( self.mode == GameMode.WAIT_FOR_USER_MOVE_BOAT ):
+            dirty_tricks_menu = self.active_question.on_correct_cb.dirty_tricks_menu.dirty_trick_keys()
+            pg_list_menu = settings.str2pg_letters( dirty_tricks_menu )
             if ( event.type == pygame.KEYDOWN ):
                 player = self.players[self.active_player]
                 if ( event.key == pygame.K_w ):
@@ -223,6 +266,15 @@ class App(object):
                     player.move( "right" )
                 elif ( event.key == pygame.K_a ):
                     player.move( "left" )
+                elif( event.key in pg_list_menu ):
+                    self.active_dirty_trick = self.active_question.on_correct_cb.get_dirty_trick( settings.pgkey2str(event.key) )
+                    self.active_dirty_trick.update_game_mode()
+                    self._display_surf.fill((0,0,0))
+                    self.draw_world()
+
+                    # Active dirty trick should now be an instance of FishingTrick
+                    self.active_dirty_trick.show_options()
+                    return
                 else:
                     return # Return if the pressed key is not a,w,s,d
 
@@ -238,6 +290,25 @@ class App(object):
                     if ( uid in self.pickup_tiles ):
                         self.goat_picked_up()
                 self.next_player()
+
+        if ( self.mode == GameMode.WAIT_FOR_FISHING_RESPONS ):
+            if ( self.active_dirty_trick is None ):
+                raise ValueError( "No active dirty trick set!" )
+            self._display_surf.fill((0,0,0))
+            self.draw_world()
+
+            # Active dirty trick should now be an instance of FishingTrick
+            self.active_dirty_trick.show_options()
+
+            if ( event.type == pygame.KEYDOWN ):
+                if ( event.key in self.active_dirty_trick.get_accepted_selection_events() ):
+                    self.active_dirty_trick.set_selected( event.key )
+                elif ( event.key == pygame.K_RETURN ):
+                    self.active_dirty_trick.run_animation()
+                    self.mode = GameMode.IDLE
+                    self.draw_world()
+                    self.next_player()
+                    return
 
     def next_player(self):
         self.active_player += 1
@@ -259,6 +330,12 @@ class App(object):
         text = font.render( active, False, (255,255,255))
         self._display_surf.blit( text, (x,y) )
         pygame.display.flip()
+
+    def get_start_of_info_screen( self ):
+        """
+        Returns x-coordinate of the start of the info screen
+        """
+        return int( self.width/2.0 )
 
     def on_loop(self):
         pass
