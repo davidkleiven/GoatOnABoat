@@ -11,7 +11,8 @@ from gob.famous_norwegians import FamousNorwegians
 import numpy as np
 import json
 from gob import settings
-import shutil
+import glob
+import os
 
 class App(object):
     def __init__( self, players=None ):
@@ -342,8 +343,12 @@ class App(object):
         pass
     def on_render(self):
         pass
+        
     def on_cleanup(self):
         pygame.quit()
+        for f in glob.glob("tmp/*"):
+            os.remove(f)
+        os.rmdir("tmp")
 
     def on_execute(self):
         if self.on_init() == False:
@@ -356,12 +361,6 @@ class App(object):
             self.on_loop()
             self.on_render()
         self.on_cleanup()
-
-    def __del__( self ):
-        """
-        Clean up
-        """
-        shutil.rmtree("tmp")
 
 if __name__ == "__main__":
     theApp = App()
