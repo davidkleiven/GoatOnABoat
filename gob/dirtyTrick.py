@@ -11,6 +11,12 @@ class DirtyTrick(object):
         self.info = info
         self.cost = cost
 
+    def update(self):
+        """
+        Updates info of the class if nessecary
+        """
+        pass
+
     def update_game_mode(self):
         raise NotImplementedError( "This function has to be implemented in child classes!" )
 

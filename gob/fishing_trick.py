@@ -18,6 +18,10 @@ class FishingTrick( DirtyTrick ):
         self.neutral_color = (254,217,166)
         self.selected_color = (255,127,0)
         self.players = []
+        self.update()
+
+    def update(self):
+        self.players = []
         for i,player in enumerate(self.app.players):
             if ( i == self.app.active_player ):
                 continue

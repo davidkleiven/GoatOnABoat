@@ -11,6 +11,7 @@ from gob.famous_norwegians import FamousNorwegians
 import numpy as np
 import json
 from gob import settings
+import shutil
 
 class App(object):
     def __init__( self, players=None ):
@@ -355,6 +356,12 @@ class App(object):
             self.on_loop()
             self.on_render()
         self.on_cleanup()
+
+    def __del__( self ):
+        """
+        Clean up
+        """
+        shutil.rmtree("tmp")
 
 if __name__ == "__main__":
     theApp = App()

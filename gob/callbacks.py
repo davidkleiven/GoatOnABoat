@@ -18,6 +18,7 @@ class OnCorrectDrawOptions(object):
         """
         for trick in self.dirty_tricks_menu.available_tricks:
             if ( trick.key == key ):
+                trick.update()
                 return trick
         raise ValueError( "No dirty trick corresponds to the selection!" )
 

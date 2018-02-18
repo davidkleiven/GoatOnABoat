@@ -41,3 +41,6 @@ class GoogleImageSearch(object):
             raise RuntimeError( "Did not recognize image!" )
         print (link)
         return link
+
+    def __del__( self ):
+        self.driver.close()
