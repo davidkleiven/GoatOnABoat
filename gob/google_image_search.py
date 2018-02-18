@@ -11,6 +11,7 @@ class GoogleImageSearch(object):
         self.chrome_opts.add_argument( "--headless" )
         self.chrome_opts.add_argument( "--disable-gpu" )
         self.driver = sl.webdriver.Chrome( chrome_options=self.chrome_opts )
+        self.driver.set_window_position(-10000,0)
         self.image_extensions = ["jpg","png","jpeg"]
 
     def search( self, query ):
